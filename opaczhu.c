@@ -66,12 +66,12 @@ double opa_iter(double r, double opa0){
 		rhoc=density(r);
 		opa1=opac(rhoc,T);
 		count++;
-		if(count>10000) {
+		if(0 && count>10000) {
 			opa1=0.5*(opa1+opa);
 			break;
 		}
 	}
-	if (opa1<0.0) {
+	if (0 && opa1<0.0) {
 		opa1=opa_init;}
 		//printf("WAA_OPA=%g\n",opa_init);
 	return opa1;

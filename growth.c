@@ -22,7 +22,8 @@ for(i=0;i<ring_num;i++){
 
 for(i=ring_num-1;i>=0;i--){
 for(j=0;j<peb_size_num;j++){
-	peb_map[i].flux[j]=0.0;
+	peb_map[i].fluxL[j]=0.0;
+  peb_map[i].fluxR[j]=0.0;
 }
 }
 for(i=ring_num-1;i>=0;i--){
@@ -48,7 +49,7 @@ for(j=0;j<peb_size_num;j++){
 	vt0=peb_map[i].vt_med_r[j];
 	h1=dust_budget[i].hei;
 	h2=peb_map[i].hei[j];
-        if(vr0*dt1*TUNIT/LUNIT/dr>frac) frac=vr0*dt1*TUNIT/LUNIT/dr;
+        if(vr0*dt1*TUNIT/LUNIT/dr>frac) frac=(vr0+peb_map[i].vr_drag[j])*dt1*TUNIT/LUNIT/dr;
 	rho_eff=dust_budget[i].surf_dens/sqrt(2*M_PI*(h1*h1+h2*h2));
 	tau=pp_vr_tau[1];
         if(a_pb1>a_max ||(tot_time>1e4 && i==0)) vol_plus=0.0;
@@ -61,7 +62,7 @@ for(j=0;j<peb_size_num;j++){
 }
 
 //printf("mass_gain=%f\t %f\t %f\t ring_num=%d\n",mass_gain,vol_plus,dt1,i);
-}while(mass_gain>0.003 || frac>0.09);
+}while(mass_gain>0.003 || fabs(frac)>0.09);
 dt_ring[i]=dt1;
 }
 
@@ -90,9 +91,9 @@ for(j=0;j<peb_size_num;j++){
 	h2=peb_map[i].hei[j];
 	rho_eff=dust_budget[i].surf_dens/sqrt(2*M_PI*(h1*h1+h2*h2));
 	//tau=pp_vr_tau[1];
-	
+
         if(a_pb1>a_max ||dust_budget[i].surf_dens< 1e-6 || (i==0)
-						 ||fabs(ring_sigma/dust_budget[i].surf_dens) > 1.) vol_plus=0.0;
+						 ||fabs(ring_sigma/dust_budget[i].surf_dens) > 100000.) vol_plus=0.0;
         else{
         //vol_plus=1.0*M_PI*a_pb1*a_pb1*sqrt(vr0*vr0+0.25*tau*vr0*tau*vr0)*dt1*TUNIT;
 	//printf("vol1=%g\t",vol_plus);
@@ -108,21 +109,23 @@ for(j=0;j<peb_size_num;j++){
 
         //tau=pp_vr_tau[1];
         if(a_pb2>a_max || dust_budget[i].surf_dens< 1e-6 || (i==0)
-						 ||fabs(ring_sigma/dust_budget[i].surf_dens) > 1.) vol_plus=0.0;
+						 ||fabs(ring_sigma/dust_budget[i].surf_dens) > 100000.) vol_plus=0.0;
         else{
         //    vol_plus=1.0*M_PI*a_pb2*a_pb2*sqrt(vr0*vr0+0.25*tau*vr0*tau*vr0)*dt1*TUNIT;
 	vol_plus=1.0*M_PI*a_pb2*a_pb2*sqrt(vr0*vr0+vt0*vt0)*dt1*TUNIT;
-        
+
 	    }
         a_pb22=pow(((vol_plus*coag_eff*rho_eff/rho_peb+4.0/3.0*M_PI*a_pb2*a_pb2*a_pb2)*3.0/4.0/M_PI),1.0/3.0);
         if(a_pb2<a_max && a_pb22>a_max) a_pb22=a_max;
-	
+
         a_pb3=(a_pb2-a_pb1)/(a_pb22-a_pb11)*(a_pb2-a_pb11)+a_pb1;
         frac_s=(a_pb2-a_pb3)/(a_pb2-a_pb1);
 //      frac_s=(a_pb22-a_pb2)/(a_pb2-a_pb1);
         if(a_pb2>a_max) frac_s=0.0;
 	//ring_mass_gain+=frac_s*pow(a_pb2/a_pb1,3.0)*peb_map[i].mass_out[j];
-	ring_mass_gain+=(pow(a_pb2/a_pb3,3.0)-1.0)*peb_map[i].mass_out[j];
+  if(a_pb1>a_max ||dust_budget[i].surf_dens< 1e-6 || (i==0)
+       ||fabs(ring_sigma/dust_budget[i].surf_dens) > 100000.) ring_mass_gain+=0.0;
+	else ring_mass_gain+=(pow(a_pb2/a_pb3,3.0)-1.0)*peb_map[i].mass_out[j];
 
         if(frac_s>0.5 && 0) printf("%f\t %d\t%d\t sizeTOOLARGE_middle\n",frac_s,i,j);
 	if(a_pb1>a_max && frac_s>0.0) printf("WTF??? a_max=%f\ta_pb1=%f\tfrac_s=%f\n",a_max,a_pb1,frac_s);
@@ -135,6 +138,7 @@ for(j=0;j<peb_size_num;j++){
 //      x=dr*(dr-vr2*dt0)/(dr+vr1*dt0-vr2*dt0);
 //      frac=(dr-x)/dr;
         frac=1.0-(dr-vr2*dt1*TUNIT/LUNIT)/(dr+vr1*dt1*TUNIT/LUNIT-vr2*dt1*TUNIT/LUNIT);
+        frac+=peb_map[i].vr_drag[j]*dt1*TUNIT/LUNIT/dr;
         //frac=vr1*dt0*TUNIT/LUNIT/dr;
         j_new=j+1;
 	if(frac>0.2 && 0) printf("OMG moving too fast%d\t%d\t%f\n",i,j,frac);
@@ -157,13 +161,19 @@ for(j=0;j<peb_size_num;j++){
 	peb_map[i_new].mass_in[j_new]+=pow(a_pb22/a_pb2,3)*frac*frac_s*peb_map[i].mass_out[j];
 	peb_map[i_new].mass_in[j]+=pow(a_pb2/a_pb3,3)*frac*(1.0-frac_s)*peb_map[i].mass_out[j];
 	}
+  if(frac>0.0){
+	  peb_map[i].fluxL[j_new]+=pow(a_pb22/a_pb2,3)*frac*frac_s*peb_map[i].mass_out[j];
+    peb_map[i].fluxL[j]+=pow(a_pb2/a_pb3,3)*frac*(1.0-frac_s)*peb_map[i].mass_out[j];
+  }
+  else{
+    peb_map[i].fluxR[j_new]-=pow(a_pb22/a_pb2,3)*frac*frac_s*peb_map[i].mass_out[j];
+    peb_map[i].fluxR[j]-=pow(a_pb2/a_pb3,3)*frac*(1.0-frac_s)*peb_map[i].mass_out[j];
+  }
+  peb_map[i].mass_in[j_new]+=pow(a_pb22/a_pb2,3)*(1.0-fabs(frac))*frac_s*peb_map[i].mass_out[j];
 
-	peb_map[i].flux[j_new]+=pow(a_pb22/a_pb2,3)*frac*frac_s*peb_map[i].mass_out[j];
-	peb_map[i].mass_in[j_new]+=pow(a_pb22/a_pb2,3)*(1.0-frac)*frac_s*peb_map[i].mass_out[j];
-	peb_map[i].flux[j]+=pow(a_pb2/a_pb3,3)*frac*(1.0-frac_s)*peb_map[i].mass_out[j];
-	peb_map[i].mass_in[j]+=pow(a_pb2/a_pb3,3)*(1.0-frac)*(1.0-frac_s)*peb_map[i].mass_out[j];
+	peb_map[i].mass_in[j]+=pow(a_pb2/a_pb3,3)*(1.0-fabs(frac))*(1.0-frac_s)*peb_map[i].mass_out[j];
 	peb_map[i].mass_out[j]-=peb_map[i].mass_out[j];
-	
+
 /*
 	ring_mass_after+=pow(a_pb22/a_pb2,3)*frac*frac_s*peb_map[i].mass_out[j];
 	ring_mass_after+=pow(a_pb22/a_pb2,3)*(1.0-frac)*frac_s*peb_map[i].mass_out[j];
@@ -173,7 +183,7 @@ for(j=0;j<peb_size_num;j++){
 	if(i<ring_num-1){
 //	peb_map[i].mass_in[j]+=peb_map[i+1].flux[j]*dt1/dt0;
 	}
-	
+
 	if(0 && sub_time1+2*dt1>dt0 && j>=9 && j<=11&& i<10 && i > 6) printf("PEB_DENS %d %d = %g ratio=%f\t%f\t%f dt=%f\n",i,j,peb_map[i].mass_in[j]/AREA,a_pb22/a_pb2,frac,frac_s,dt1);
 
 }
@@ -191,20 +201,27 @@ for(j=0;j<peb_size_num;j++){
 
 	if(dust_budget[i].surf_dens<0.0){
                 printf("dust_surf_dens=%e\t%d\n",dust_budget[i].surf_dens,i);
-                return -1.0;
+                printf("dust dens=%e\t dens_gain=%e\t old_peb_dens=%e\t size_ratio=%e\n",old_sigma,ring_mass_gain/AREA,ring_sigma,a_pb2/a_pb3-1.0);
+                for(j=0;j<peb_size_num;j++){
+                if(peb_map[i].surf_dens[j]<0.0) printf("peb_size=%d %f,peb_dens=%e\n",j,peb_map[i].size[j],peb_map[i].surf_dens[j]);
+              }
+                if(dust_budget[i].surf_dens<0.0) return -1.0;
         }
 	//}
 //        printf("HERE!!!\t%d\n",j);
 
 
-        
+
 
 
         for(j=0;j<peb_size_num;j++){
-		if(i<ring_num-1) peb_map[i].mass_in[j]+=peb_map[i+1].flux[j]*dt1/dt0;
+		if(i<ring_num-1) peb_map[i].mass_in[j]+=peb_map[i+1].fluxL[j]*dt1/dt0;
+    if(i>0) peb_map[i].mass_in[j]+=peb_map[i-1].fluxR[j]*dt1/dt0;
                 peb_map[i].mass_out[j]+=peb_map[i].mass_in[j];
                 peb_map[i].mass_in[j]=0.0;
                 peb_map[i].surf_dens[j]=peb_map[i].mass_out[j]/peb_map[i].AREA;
+                if (peb_map[i].surf_dens[j]<0.0) peb_map[i].surf_dens[j]=1e-30;
+                peb_map[i].mass_out[j]=peb_map[i].surf_dens[j]*AREA;
                 //peb_map[i].rho[j]=peb_map[i].surf_dens[j]/sqrt(2.0*M_PI)/peb_map[i].hei[j];
         }
 sub_time1+=dt1;
@@ -225,7 +242,7 @@ int i,i_new;
 double vr_g, AREA,old_sigma,frac;
 dust_budget[ring_num-1].mass_out+=1.0*mdot*MSUN*dt0*dust_gas;
 for(i=ring_num-1;i>-1;i--){
-	vr_g=vr_gas(dust_budget[i].rad)*1;	
+	vr_g=vr_gas(dust_budget[i].rad)*1;
 	frac=vr_g*dt0*TUNIT/LUNIT/dust_budget[i].dr;
 	i_new=i-1;
 //	frac=0.0;
@@ -238,7 +255,7 @@ for(i=ring_num-1;i>-1;i--){
 }
 
 for(i=ring_num-1;i>-1;i--){
-//	AREA=M_PI*((dust_budget[i].rad+size_ring/2.0)*(dust_budget[i].rad+size_ring/2.0)-(dust_budget[i].rad-size_ring/2.0)*(dust_budget[i].rad-size_ring/2.0))*LUNIT*LUNIT;	
+//	AREA=M_PI*((dust_budget[i].rad+size_ring/2.0)*(dust_budget[i].rad+size_ring/2.0)-(dust_budget[i].rad-size_ring/2.0)*(dust_budget[i].rad-size_ring/2.0))*LUNIT*LUNIT;
 	AREA=dust_budget[i].AREA;
 	dust_budget[i].mass_out+=dust_budget[i].mass_in;
 	dust_budget[i].mass_in=0.0;
@@ -258,7 +275,7 @@ FILE* fp;
 int i;
 fp=fopen("max_size.txt","w");
 for(i=0;i<ring_num;i++){
-	fprintf(fp,"%g\t%g\n",peb_map[i].rad_med,2.25*mean_path(peb_map[i].rad_med));	
+	fprintf(fp,"%g\t%g\n",peb_map[i].rad_med,2.25*mean_path(peb_map[i].rad_med));
 }
 fclose(fp);
 }
@@ -279,9 +296,7 @@ for(i=0;i<ring_num;i++){
 	if(tau>1.0) a2=a;
 	else a1=a;
 	}
-	fprintf(fp,"%g\t%g\n",peb_map[i].rad_med,a);	
+	fprintf(fp,"%g\t%g\n",peb_map[i].rad_med,a);
 }
 fclose(fp);
 }
-
-

@@ -34,8 +34,10 @@ typedef struct PEBBLE_MAP{
 	double vr_med_r[peb_size_num+1];//vr when r=r_med
 	double vr_med_s[peb_size_num];//vr when a_pb=a_pb_med at inner edge radius
 	double vt_med_r[peb_size_num+1];
+	double vr_drag[peb_size_num];
 	double hei[peb_size_num];
-	double flux[peb_size_num];
+	double fluxL[peb_size_num];
+	double fluxR[peb_size_num];
 } PEBBLE_MAP;
 
 typedef struct DUST_MAP{

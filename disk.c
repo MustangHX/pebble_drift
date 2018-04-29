@@ -18,6 +18,7 @@ double alpha_func(double r){
 	  double dr_tran = DRTRAN;
 	  double r_tran = RTRAN;
 		double viscosity=alpha_init;
+    if (fabs(VISCOSITYRATIO-1.0)<0.1) return viscosity;
 		if (r < rmin) viscosity *=  VISCOSITYRATIO;
 		if ((r >= rmin) && (r <= rmax)) {
     viscosity *= 0.5*(1.0-VISCOSITYRATIO)*sin((r-r_tran)*M_PI/(2.0*dr_tran))+0.5*(1.0+VISCOSITYRATIO);
@@ -41,7 +42,7 @@ if (!ITER) {
 temper_passive=temp0*pow(r/LUNIT,-3.0/7.0);
 if ( (mdot<2e-10 && alpha>8e-4) || r/LUNIT>10.0 || temper_passive > temper_active) return temper_passive;
 else return temper_active;
-}	
+}
 
 double sound_sp(double r) {//return c_s in cgs
 if (!ITER) opa=func_line1(r,p_opa_line);
@@ -86,7 +87,7 @@ if (!ITER) opa=func_line1(r,p_opa_line);
 	double dr;
 	dr=0.002;
 	return -1.0*(log(pressure(r))-log(pressure(r+dr)))/(log(r)-log(r+dr));
-}	
+}
 
 double yeta(double r){
 if (!ITER) opa=func_line1(r,p_opa_line);

@@ -38,7 +38,7 @@ int main(int argc, char *argv[])
 		NbRestart = atoi(argv[i]);
 		}
 		if (NbRestart < 0) printf("Incorrect restart number\n");
-	}						      
+	}
 	n=0;
    // group();
 	printf("PPPPeEEEBBBB%.16f\n",density(1.0));
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         printf("PPPPeEEEBBBB%.12f\n",drag_group(1.0,0.01));
 	Init2();
 	printf("SIZEOF PEB=%lu\t DUST=%lu\n",sizeof(peb_map[0]),sizeof(dust_budget[0]));
-	//check_disk(1.0);
+	check_disk(1.0);
 	drift_vr_test(1.0,152.0,pp_vr_tau2);
         fp=fopen("vr_check.txt","w");
 	printf("===============================\n");
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 	//printf("%f\t%f\n",vr_estimate(1.0,a_pb1,pp_vr_tau0),v_r1_test(1.0,a_pb1));
         fclose(fp);
 	printf("vr_check finished\n");
-	//return 0;	
+	//return 0;
 	if(Restarting == 1){
 		Restart(NbRestart);
 		time_sum+=NbRestart;
@@ -80,8 +80,9 @@ int main(int argc, char *argv[])
         fclose(fp);
 	        fp=fopen("rad_chart.txt","w");
         for(i=0;i<ring_num;i++){
-                fprintf(fp,"%f\n",peb_map[i].rad+peb_map[i].dr/2.0);
+                fprintf(fp,"%f\n",peb_map[i].rad);
 	        }
+				fprintf(fp,"%f\n",R_OUT);
         fclose(fp);
 	printf("disk_grid_num finished\n");
 	fp=fopen("tau_chart.txt","w");
@@ -106,7 +107,7 @@ int main(int argc, char *argv[])
 	a_p=0.1;
 	r0=30.00;
         fprintf(fp,"%e\%e\n",r0,a_p);
-			
+
 	while(0 && r0>0.1){
 	vr0=drift_vr(r0,a_p,pp_vr_tau0);
 	tau=pp_vr_tau0[1];
@@ -141,11 +142,11 @@ int main(int argc, char *argv[])
 	if(Restarting == 1){
 		num_step=NbRestart;
 	}
-	
+
 	time0=time(NULL);
 	//start time sequence
 	//disk_evolve();
-	printf("main integration started\n");	
+	printf("main integration started\n");
 	while (time_sum<tot_num_step*1.0)
 	{
 	if(num_step==0){
@@ -172,15 +173,15 @@ int main(int argc, char *argv[])
 		alpha=alpha_init;
 		mdot=mdot_init*exp(-1.0*time_sum/1e6*log(1e-8/1e-9));
 		//check_disk(1.0);
-		disk_evolve();
+		//disk_evolve();
 		printf("disk evolved\n");
 	}
 	dt=grow_3b_ada_fix(dt2,time_sum);
         //      dt=grow_3b2_test(dt2);
-				
+
 		//printf("main dt=%f\tdt2=%f\n",dt,dt2);
 		//dt=1.0;
-		if(dt<0.0) { 
+		if(dt<0.0) {
 		printf("Actual time step count:%d\t dt=%f\n",num_step,dt);
 		return 0;
 		}
@@ -197,7 +198,7 @@ int main(int argc, char *argv[])
 		peb_map[i].mass_in[j]=0.0;
 		//AREA=M_PI*((peb_map[i].rad+dr/2.0)*(peb_map[i].rad+dr/2.0)-(peb_map[i].rad-dr/2.0)*(peb_map[i].rad-dr/2.0))*LUNIT*LUNIT;
 		AREA=peb_map[i].AREA;
-		
+
 		if(i==ring_num-1 && 1 && 1) {
 			//peb_map[i].mass_out[j]=0.2*AREA*dust_budget[i].surf_dens*exp(-1.0*peb_map[i].size[j]/0.1)*exp(0.0*num_step/100);
 		if(peb_map[i].size_med[j]>size_min_inj && peb_map[i].size_med[j]<peb_size_lim){
@@ -232,7 +233,7 @@ int main(int argc, char *argv[])
         fprintf(fp,"%e\t",peb_map[i].surf_dens[j]);
 		tot_mass+=peb_map[i].mass_out[j];
 	}
-        fprintf(fp,"\n");		
+        fprintf(fp,"\n");
 	}
 	for(i=0;i<ring_num;i++){
 		tot_mass_dust+=dust_budget[i].mass_out;
@@ -250,7 +251,7 @@ int main(int argc, char *argv[])
 
 	}
 	time1=time(NULL);
-		
+
 	printf("Actual time step count:%d dt=%f time_used=%f min\n",num_step,dt,(time1-time0)/60.0);
 
 return 0;
