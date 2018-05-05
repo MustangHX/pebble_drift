@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 		return 0;
 		}
 	}
-	dust_evolve(dt);
+	//dust_evolve(dt);
 	//disk_evolve();
 	if(COAG_SW>0) {coagulation(dt,time_sum);}
 	mass_flow_inner=0.0;

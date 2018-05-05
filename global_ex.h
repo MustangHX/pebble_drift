@@ -27,7 +27,7 @@
 #define peb_low_lim 1e-40
 #define COAG_SW -1
 
-#define time_yr 3000000
+#define time_yr 30000
 #define peb_num 50
 #define v_coag_max 1000 //cm/s
 #define v_tran_width 500 // cm/s
@@ -53,4 +53,4 @@
 #define ring_num 140
 #define VISCOSITYRATIO 10
 #define RTRAN 0.1
-#define DRTRAN 0.044
+#define DRTRAN 0.02
