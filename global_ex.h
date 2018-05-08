@@ -51,6 +51,7 @@
 #define i_lim1 36
 #define i_lim2 152
 #define ring_num 140
+#define SINEALPHA 0
 #define VISCOSITYRATIO 10
 #define RTRAN 0.1
 #define DRTRAN 0.02

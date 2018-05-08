@@ -23,7 +23,22 @@ double alpha_func(double r){
 		if ((r >= rmin) && (r <= rmax)) {
     viscosity *= 0.5*(1.0-VISCOSITYRATIO)*sin((r-r_tran)*M_PI/(2.0*dr_tran))+0.5*(1.0+VISCOSITYRATIO);
 		}
-		return viscosity;
+
+		double c0,c1,c2,c3,rlog,alplog,rtran1,rtran2,rtran0;
+		rlog=log10(r);
+		rtran0=0.064;rtran1=0.205;rtran2=0.73;
+		if(r<rtran0)	alplog=log10(0.09848);
+		else if(r>=rtran0 && r < rtran1){
+			c0=-6.7811175; c1=-12.02901; c2=-8.2440562; c3=-1.8594328;
+			alplog=c0+c1*rlog+c2*rlog*rlog+c3*rlog*rlog*rlog;
+		}
+		else if(r>=rtran1 && r<rtran2){
+			c0=-4.5536009; c1=-4.1222938; c2=-0.17861849;
+			alplog=c0+c1*rlog+c2*rlog*rlog;
+		}
+		else alplog=-4.;
+		if (SINEALPHA==1) return viscosity;
+		else return pow(10,alplog);
 }
 
 double temperature (double r){
