@@ -23,7 +23,8 @@ for(i=0;i<ring_num;i++){
 for(i=ring_num-1;i>=0;i--){
 for(j=0;j<peb_size_num;j++){
 	peb_map[i].fluxL[j]=0.0;
-  peb_map[i].fluxR[j]=0.0;
+	peb_map[i].fluxR[j]=peb_map[i].fluxRb[j];
+  peb_map[i].fluxRb[j]=0.0;
 }
 }
 for(i=ring_num-1;i>=0;i--){
@@ -81,7 +82,7 @@ ring_sigma=0.0;
 for(j=0;j<peb_size_num;j++){
         ring_mass_before+=peb_map[i].mass_out[j];
 	ring_sigma+=peb_map[i].surf_dens[j];
-//	  peb_map[i].fluxR[j]=0.0;
+	//  peb_map[i].fluxRb[j]=0.0;
 
 }
 for(j=0;j<peb_size_num;j++){
@@ -177,14 +178,15 @@ for(j=0;j<peb_size_num;j++){
 	}
   peb_map[i].mass_in[j_new]+=pow(a_pb22/a_pb2,3)*(1.0-fabs(frac))*frac_s*peb_map[i].mass_out[j];
 	peb_map[i].mass_in[j]+=pow(a_pb2/a_pb3,3)*(1.0-fabs(frac))*(1.0-frac_s)*peb_map[i].mass_out[j];
-	if(frac<=0.0 && i < ring_num-1){
-	peb_map[i+1].mass_out[j_new]+=pow(a_pb22/a_pb2,3)*fabs(frac)*frac_s*peb_map[i].mass_out[j];
-	peb_map[i+1].mass_out[j]+=pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*peb_map[i].mass_out[j];
+	if(frac<=0.0){
+	peb_map[i].fluxRb[j_new]+=pow(a_pb22/a_pb2,3)*fabs(frac)*frac_s*peb_map[i].mass_out[j];
+	peb_map[i].fluxRb[j]+=pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*peb_map[i].mass_out[j];
+	//if(j==16) printf("outer i %d j %d mass=%e frac=%e frac_s=%e mass0=%e\n",i,j,pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*peb_map[i].mass_out[j],frac,frac_s,peb_map[i].mass_out[j]);
 	}
 	peb_map[i].mass_out[j]-=peb_map[i].mass_out[j];
 	
 	// a stupid solution for reverse flux, will fix in future
-  if(i>0){
+  if(0 && i>0){
 	vr1=peb_map[i].vr_med_s[j];
 	vr2=peb_map[i-1].vr_med_s[j];
 	dr=peb_map[i-1].dr;
@@ -192,7 +194,7 @@ for(j=0;j<peb_size_num;j++){
 	frac+=peb_map[i-1].vr_drag[j]*dt1*TUNIT/LUNIT/dr;
   frac=fabs(frac);
   }
-	if(i>0 && fabs(ring_sigma)/dust_budget[i].surf_dens<=1e5 && frac<0.0){//sweep up growth calculation
+	if(0 && i>0 && fabs(ring_sigma)/dust_budget[i].surf_dens<=1e5 && frac<0.0){//sweep up growth calculation
 		int i_in=i-1;
 		a_pb1=peb_map[i_in].size[j];
 		vr0=peb_map[i_in].vr_med_r[j];
@@ -237,6 +239,7 @@ for(j=0;j<peb_size_num;j++){
     peb_map[i].mass_in[j_new]+=pow(a_pb22/a_pb2,3)*fabs(frac)*frac_s*(peb_map[i_in].mass_out[j]+peb_map[i_in].mass_in[j]);
     //peb_map[i_in].fluxR[j]+=pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*peb_map[i_in].mass_out[j];
     peb_map[i].mass_in[j]+=pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*(peb_map[i_in].mass_out[j]+peb_map[i_in].mass_in[j]);
+	//if(j==16) printf("inner i %d j %d mass=%e frac=%e frac_s=%e mass0=%e\n",i,j,pow(a_pb2/a_pb3,3)*fabs(frac)*(1.0-frac_s)*peb_map[i_in].mass_out[j],frac,frac_s,peb_map[i_in].mass_out[j]);
 	}//end of sweep up growth calculation
 // end of stupidity
 
@@ -279,7 +282,7 @@ for(j=0;j<peb_size_num;j++){
 			double a,b,c;
 		if(i<ring_num-1) peb_map[i].mass_in[j]+=peb_map[i+1].fluxL[j]*dt1/dt0;
 		b=peb_map[i].mass_in[j];
-    //if(i>0) peb_map[i].mass_in[j]+=peb_map[i-1].fluxR[j];
+    if(i>0) peb_map[i].mass_in[j]+=peb_map[i-1].fluxR[j]*dt1/dt0;
 		c=peb_map[i].mass_in[j];
 		//if(c-b>0.0) printf("flux right to left %e\n",c-b);
                 peb_map[i].mass_out[j]+=peb_map[i].mass_in[j];

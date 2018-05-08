@@ -38,6 +38,7 @@ typedef struct PEBBLE_MAP{
 	double hei[peb_size_num];
 	double fluxL[peb_size_num];
 	double fluxR[peb_size_num];
+	double fluxRb[peb_size_num];//outward flux from previous step
 } PEBBLE_MAP;
 
 typedef struct DUST_MAP{
