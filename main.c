@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	double AREA,a_pb1,a_max,vol_plus,tau,vr0,mass_flow_inner;
 	double coag_eff=1.0,tot_mass=0.0,out_source=0.0,a_p,r0,dt=init_step,time_sum=0.0,dt2,tot_mass_dust,t_single=0.0;
 	double vr1,vr2,tau1,tau2;
-	FILE *fp,*fp2,*fp3,*fp4;
+	FILE *fp,*fp2,*fp3,*fp4,*fp5,*fp6;
 	char outname[256], outname2[256];
 	int Restarting = 0,grow_method=3;
 	printf("%s\n",argv[0]);
@@ -226,6 +226,8 @@ int main(int argc, char *argv[])
 	sprintf(outname2,"dust_sigma%d.txt",(int)time_sum);
 	fp3=fopen(outname2,"w");
 	fp4=fopen("mass_flow_inner_ring.txt","a+");
+	fp5=fopen("mass_flux_inner_ring.txt","a+");
+	fp6=fopen("mass_fluxR_inner_ring.txt","a+");
 	fp2=fopen("mass_check.txt","a+");
         for(i=0;i<ring_num;i++){
         for(j=0;j<peb_size_num;j++){
@@ -239,12 +241,20 @@ int main(int argc, char *argv[])
 		tot_mass_dust+=dust_budget[i].mass_out;
 	fprintf(fp3,"%e\t%e\n",dust_budget[i].rad,dust_budget[i].surf_dens);
 	}
+	for(j=0;j<peb_size_num;j++){
+	  fprintf(fp5,"%e\t",peb_map[1].fluxL[j]);
+	  fprintf(fp6,"%e\t",peb_map[0].fluxR[j]);
+	}
+	fprintf(fp5,"\n");
+	fprintf(fp6,"\n");
 	fprintf(fp2,"%2.20g\t%2.20g\t%2.20g\n",tot_mass,tot_mass_dust,tot_mass+tot_mass_dust);
 	fprintf(fp4,"%f\t%2.20g\n",time_sum,mass_flow_inner);
 	fclose(fp);
 	fclose(fp2);
 	fclose(fp3);
 	fclose(fp4);
+	fclose(fp5);
+	fclose(fp6);
 	printf("%f finished\r",time_sum/(tot_num_step*1.0));
 	printf("Actual time step count:%d\t dt=%f\t time=%f\n",num_step,dt,time_sum);
 	}

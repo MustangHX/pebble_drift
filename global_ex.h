@@ -27,7 +27,7 @@
 #define peb_low_lim 1e-40
 #define COAG_SW -1
 
-#define time_yr 30000
+#define time_yr 300000
 #define peb_num 50
 #define v_coag_max 1000 //cm/s
 #define v_tran_width 500 // cm/s
@@ -37,7 +37,7 @@
 #define size_min_init 1e-1
 #define outp_time 1
 #define NUM_LIM 100
-#define peb_size_num 45
+#define peb_size_num 90
 #define peb_size_lim 0.3 //in cm
 #define size_step 0.1
 #define size_slope 5.0
