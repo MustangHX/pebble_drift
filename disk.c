@@ -26,6 +26,7 @@ double alpha_func(double r){
 
 		double c0,c1,c2,c3,rlog,alplog,rtran1,rtran2,rtran0;
 		rlog=log10(r);
+		if(MDOT_INT==0) {
 		rtran0=0.064;rtran1=0.205;rtran2=0.73;
 		if(r<rtran0)	alplog=log10(0.09848);
 		else if(r>=rtran0 && r < rtran1){
@@ -37,6 +38,26 @@ double alpha_func(double r){
 			alplog=c0+c1*rlog+c2*rlog*rlog;
 		}
 		else alplog=-4.;
+		}else if(MDOT_INT==1){
+		rtran0=0.014;rtran1=0.049;rtran2=0.232;
+		if(r<rtran0)  alplog=log10(0.09848);
+		else if(r>=rtran0 && r < rtran1){
+		c0=-8.5526396; c1=-9.0739395; c2=-3.1434803; c3=-0.22451420;
+		alplog=c0+c1*rlog+c2*rlog*rlog+c3*rlog*rlog*rlog;
+													    }
+		else if(r>=rtran1 && r<rtran2){
+		c0=-6.6333076; c1=-4.3837696; c2=-0.37942259;
+		alplog=c0+c1*rlog+c2*rlog*rlog;
+		}
+		else alplog=-4.;
+		}else if(MDOT_INT==2){
+		rtran2=0.066;
+		if(r<rtran2){
+		c0=-11.604954; c1= -9.0560947;c2= -2.2069353;
+		alplog=c0+c1*rlog+c2*rlog*rlog;
+		}
+		else alplog=-4.;
+		}
 		if (SINEALPHA==1) return viscosity;
 		else return pow(10,alplog);
 }
@@ -55,7 +76,7 @@ if (!ITER) {
 	*pow((1-sqrt(r_star*LUNIT/r))*mdot*MUNIT/TUNIT,0.4)*pow(r,-0.9);
 
 temper_passive=temp0*pow(r/LUNIT,-3.0/7.0);
-if ( (mdot<2e-10 && alpha>8e-4) || r/LUNIT>10.0 || temper_passive > temper_active) return temper_passive;
+if ( (mdot<0e-10 && alpha>20e-4) || r/LUNIT>10.0 || temper_passive > temper_active) return temper_passive;
 else return temper_active;
 }
 
@@ -99,9 +120,16 @@ if (!ITER) opa=func_line1(r,p_opa_line);
 
 double k_P_func(double r){
 if (!ITER) opa=func_line1(r,p_opa_line);
-	double dr;
-	dr=0.002;
-	return -1.0*(log(pressure(r))-log(pressure(r+dr)))/(log(r)-log(r+dr));
+        double dr,i_r,r1,r2;
+        int i;
+        i_r=ring_num*log(r/r_min)/log(R_OUT/r_min);
+        i=floor(i_r);
+        //if(!ITER) printf("k_P func, r=%f\ti_r=%f\n",r,i_r);
+        dr=0.002;
+        r1=r_min*exp(i*1.0/ring_num*log(R_OUT/r_min));
+        r2=r_min*exp((i+1)*1.0/ring_num*log(R_OUT/r_min));
+        return -1.0*(log(pressure(r1))-log(pressure(r2)))/(log(r1)-log(r2));
+        //return -1.0*(log(pressure(r))-log(pressure(r+dr)))/(log(r)-log(r+dr));
 }
 
 double yeta(double r){

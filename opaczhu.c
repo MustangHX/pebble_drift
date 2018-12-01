@@ -48,6 +48,7 @@ double opac(double rho, double T)
         if (xlop<3.586*xlt-16.85&&xlt<4.){xlop=3.586*xlt-16.85;}
         if (xlt<2.9){xlop=-1.27692+0.73846*xlt;}
         rosstabd=pow(10.,xlop);
+				//return 10.0;
         return(rosstabd);
 
 }

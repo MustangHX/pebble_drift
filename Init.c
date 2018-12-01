@@ -124,7 +124,8 @@ void Init2(){// disk with variable resolution
 	}
         for(j=0;j<peb_size_num;j++){
 		AREA=peb_map[i].AREA;
-		if (peb_map[i].size_med[j]>size_min_init && peb_map[i].size_med[j]<peb_size_lim && peb_map[i].rad>RTRAN+DRTRAN) {
+		if (peb_map[i].size_med[j]>size_min_init && peb_map[i].size_med[j]<peb_size_lim \
+			 	&& (fabs(VISCOSITYRATIO-1.0)<0.1 || 1 || peb_map[i].rad>RTRAN+DRTRAN)) {
 	//		peb_map[i].mass_out[j]=peb_dust*AREA*(dust_budget[i].surf_dens*exp(-1.0*size_slope*peb_map[i].size_med[j])/mass_norm+1e-10);
 			peb_map[i].mass_out[j]=peb_dust*AREA*(dust_budget[i].surf_dens*p_size_func(peb_map[i].size_med[j])/mass_norm+1e-10);
 			//peb_map[i].mass_out[j]=peb_dust*AREA*(0.1*Sigma(peb_map[i].rad_med)*exp(-1.0*peb_map[i].size_med[j])/mass_norm+1e-10);
@@ -235,7 +236,7 @@ void Restart(int rnum){
         dt_ring[i]=init_step;
         }
          alpha=alpha_init;
-         mdot=mdot_init*exp(-1.0*rnum/1e6*log(1e-8/1e-9));
+         mdot=mdot_init*exp(-0.0*rnum/1e6*log(1e-8/1e-9));
 
          if (!(mdot<2e-10 && alpha>8e-4)){
          ITER=1;

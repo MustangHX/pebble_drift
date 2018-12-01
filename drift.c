@@ -24,7 +24,6 @@
 #define a_peb0 1.0 //radius in cm
 //#define M_PI =3.141592654;
 #define r_out 100.0
-#define r_in 0.1
 #define step0 0.001
 #define acc_rate 1.0
 #define int_m_star 1
@@ -516,7 +515,7 @@ int drift(double r_start, double a_pebble, double coag_eff)
     double k1,k2,k3,k4,step,sum1=0.0;
     x0=r_start;
     
-    x1=r_in;x=x0;y=0.0;
+    x1=r_min;x=x0;y=0.0;
     //coag_eff=EFF;
     step=-1.0*step0;
     a_pb2=a_pebble;
@@ -681,7 +680,7 @@ int drift(double r_start, double a_pebble, double coag_eff)
     //printf("%0.10f\n",sum1);
     //printf("Hello, World!\n");
     
-    x0=r_out;x1=r_in;x=x0;y=0.0;
+    x0=r_out;x1=r_min;x=x0;y=0.0;
     step=-1.0*step0;
     sum1=0.0;
     while (x>x1) {
@@ -730,7 +729,7 @@ int drift(double r_start, double a_pebble, double coag_eff)
     double k1,k2,k3,k4,step,sum1=0.0;
     x0=pp->rad[0];
     
-    x1=r_in;x=x0;y=0.0;
+    x1=r_min;x=x0;y=0.0;
     //coag_eff=EFF;
     step=-1.0*step0;
     a_pb2=pp->size[0];

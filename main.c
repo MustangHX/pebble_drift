@@ -169,7 +169,7 @@ int main(int argc, char *argv[])
 	}
 	if(grow_method==3){
 		dt2=dt;
-	if (1 && ((int)time_sum)%1000==0){
+	if (0 && ((int)time_sum)%1000==0){
 		alpha=alpha_init;
 		mdot=mdot_init*exp(-1.0*time_sum/1e6*log(1e-8/1e-9));
 		//check_disk(1.0);
@@ -186,7 +186,7 @@ int main(int argc, char *argv[])
 		return 0;
 		}
 	}
-	//dust_evolve(dt);
+	dust_evolve(dt);
 	//disk_evolve();
 	if(COAG_SW>0) {coagulation(dt,time_sum);}
 	mass_flow_inner=0.0;
@@ -226,8 +226,6 @@ int main(int argc, char *argv[])
 	sprintf(outname2,"dust_sigma%d.txt",(int)time_sum);
 	fp3=fopen(outname2,"w");
 	fp4=fopen("mass_flow_inner_ring.txt","a+");
-	fp5=fopen("mass_flux_inner_ring.txt","a+");
-	fp6=fopen("mass_fluxR_inner_ring.txt","a+");
 	fp2=fopen("mass_check.txt","a+");
         for(i=0;i<ring_num;i++){
         for(j=0;j<peb_size_num;j++){
@@ -241,20 +239,39 @@ int main(int argc, char *argv[])
 		tot_mass_dust+=dust_budget[i].mass_out;
 	fprintf(fp3,"%e\t%e\n",dust_budget[i].rad,dust_budget[i].surf_dens);
 	}
+	int i_tran;
+	double temp_delta=10.0,r_tran;
+	if (MDOT_INT==0) r_tran=0.73;
+	else if(MDOT_INT==1) r_tran=0.232;
+	else if(MDOT_INT==2) r_tran=0.066;
+	for(i=0;i<ring_num;i++){
+	if(fabs(peb_map[i].rad_med-r_tran)<temp_delta){
+		i_tran=i;
+		temp_delta=fabs(peb_map[i].rad_med-r_tran);
+		}
+	}
+	for(i=0;i<ring_num;i++){
+	if(i%10==0 || i==1 || i==i_tran-1 || i==i_tran || i==i_tran+1 || i==i_tran-2 || i==i_tran+2){
+	sprintf(outname,"mass_flux_inner_ring%d.txt",i);
+	sprintf(outname2,"mass_fluxR_inner_ring%d.txt",i);
+	fp5=fopen(outname,"a+");
+	fp6=fopen(outname2,"a+");
 	for(j=0;j<peb_size_num;j++){
-	  fprintf(fp5,"%e\t",peb_map[1].fluxL[j]);
-	  fprintf(fp6,"%e\t",peb_map[0].fluxR[j]);
+	  fprintf(fp5,"%e\t",peb_map[i].fluxL[j]);
+	  fprintf(fp6,"%e\t",peb_map[i].fluxR[j]);
 	}
 	fprintf(fp5,"\n");
 	fprintf(fp6,"\n");
+	fclose(fp5);
+	fclose(fp6);
+	}
+	}
 	fprintf(fp2,"%2.20g\t%2.20g\t%2.20g\n",tot_mass,tot_mass_dust,tot_mass+tot_mass_dust);
 	fprintf(fp4,"%f\t%2.20g\n",time_sum,mass_flow_inner);
 	fclose(fp);
 	fclose(fp2);
 	fclose(fp3);
 	fclose(fp4);
-	fclose(fp5);
-	fclose(fp6);
 	printf("%f finished\r",time_sum/(tot_num_step*1.0));
 	printf("Actual time step count:%d\t dt=%f\t time=%f\n",num_step,dt,time_sum);
 	}
