@@ -11,7 +11,7 @@ double grow_3b_ada_fix(double dt0, double tot_time){ //adaptive timestep with va
         double a_pb1,a_pb11,a_pb2,a_pb22,a_pb3,vr0,vr1,vr2,vt0,AREA,dr,a_max,dt1,sub_time1,mass_gain,ring_mass_gain=0.0,ring_sigma;
         double tau,vol_plus,frac,frac_s,coag_eff,ring_mass_before,ring_mass_after,old_sigma,ratio_sigma=1.0,rho_eff,h1,h2;
         dr=size_ring;
-        coag_eff=1.0;
+        coag_eff=0.0;
 
 
 if(1 && ((int)tot_time)%100==0 || tot_time<10000.0){
@@ -236,7 +236,8 @@ void dust_evolve(double dt0){
 
 int i,i_new;
 double vr_g, AREA,old_sigma,frac;
-dust_budget[ring_num-1].mass_out+=1.0*mdot*MSUN*dt0*dust_gas;
+double factor=1.0;
+dust_budget[ring_num-1].mass_out+=1.0*factor*mdot*MSUN*dt0*dust_gas;
 for(i=ring_num-1;i>-1;i--){
 	vr_g=vr_gas(dust_budget[i].rad)*1;	
 	frac=vr_g*dt0*TUNIT/LUNIT/dust_budget[i].dr;

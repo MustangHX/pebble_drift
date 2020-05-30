@@ -27,6 +27,7 @@ typedef struct PEBBLE_MAP{
 	double mass_in[peb_size_num];
 	double mass_out[peb_size_num];
         double surf_dens[peb_size_num];
+				double surf_dens_impose[peb_size_num];
 	double rho[peb_size_num];
 	double tau_fric[peb_size_num];
 	double vr[peb_size_num];//vr when both r and size are in center of box

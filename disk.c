@@ -76,7 +76,7 @@ if (!ITER) {
 	*pow((1-sqrt(r_star*LUNIT/r))*mdot*MUNIT/TUNIT,0.4)*pow(r,-0.9);
 
 temper_passive=temp0*pow(r/LUNIT,-3.0/7.0);
-if ( (mdot<0e-10 && alpha>20e-4) || r/LUNIT>10.0 || temper_passive > temper_active) return temper_passive;
+if ( (mdot<0e-10 && alpha>20e-4) || r/LUNIT>10.0 || (temper_passive > temper_active && r/LUNIT > 0.1)) return temper_passive;
 else return temper_active;
 }
 

@@ -25,12 +25,20 @@
 #define m_p 1.660538921e-24
 #define G 6.674e-8
 #define peb_low_lim 1e-40
-#define COAG_SW -1
+#define COAG_SW 0 // coagulation must be turned on to have fragmentation
+#define FRAG_SW 0
 
-#define time_yr 5000000
+
+#define time_yr 1000
 #define peb_num 50
-#define v_coag_max 100 //cm/s
-#define v_tran_width 50 // cm/s
+#define v_coag_max 500.0 //cm/s
+#define v_tran_width 500.0 // cm/s
+#define v_frag_min0  1500.0 //cm/s
+#define v_frag_min1  2000.0 //cm/s
+#define v_frag_max1  2000.0 //cm/s
+#define v_frag_max0  2500.0 //cm/s
+#define frag_slope -0.2
+#define interaction_min_radius 0.2 // in AU, min r with peb-peb interaction
 #define size_ring 0.25
 #define size_min 0.01
 #define size_min_inj 1e-2
@@ -44,15 +52,16 @@
 #define size_slope_pow 1.0
 #define size_slope_birn 0.0
 #define dust_gas 0.01
-#define peb_dust 0.01
-#define peb_dust_inj 0.01
+#define peb_dust 0.0
+#define peb_dust_inj 0.0
 #define R_OUT 30.0
 #define r_min 0.02
 #define i_lim1 36
 #define i_lim2 152
-#define ring_num 160
+#define ring_num 140
 #define SINEALPHA 0
 #define MDOT_INT 1 //0 for mdot=1e-8, 1 for mdot=1e-9
 #define VISCOSITYRATIO 10
 #define RTRAN 0.1 
 #define DRTRAN 0.02
+#define PEB_IMPOSE 0

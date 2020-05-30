@@ -8,7 +8,8 @@ all:
 #	gcc -c main.c
 #	gcc -c drift.c
 #	gcc -o main.o drift.o -o pebble
-	gcc -mcmodel=medium ./*.c -o pebble -lm -lpthread #-lstdc++
+	gcc -g *.c -o pebble
+#	gcc -mcmodel=medium ./*.c -o pebble -lm -lpthread #-lstdc++
 #	gcc main.c disk.c drift.c global_var.c group.c Init.c interaction.c opaczhu.c spline.c growth.c output_check.c -o pebble -lstdc++
 # gcc -mcmodel=medium main.c disk.c drift.c global_var.c group.c Init.c interaction.c opaczhu.c spline.c -o pebble -lstdc++
 archive :

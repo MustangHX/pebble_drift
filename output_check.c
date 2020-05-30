@@ -4,7 +4,7 @@
 
 double vr_p[2]={0.0};
 void check_disk(double r){
-	FILE *fp1,*fp2,*fp3,*fp4,*fp5,*fp6,*fp7,*fp8,*fp9;
+	FILE *fp1,*fp2,*fp3,*fp4,*fp5,*fp6,*fp6b,*fp7,*fp8,*fp9;
 	int i,j;
 	ITER=0;
 	opa=10.0;
@@ -23,6 +23,7 @@ vr_gas(r),vr_gas(r)*2*M_PI*r*LUNIT*Sigma(r)*TUNIT/MUNIT);
 	fp4=fopen("dust_mass.txt","w");
 	fp5=fopen("height_peb.txt","w");
 	fp6=fopen("vr_peb.txt","w");
+	fp6b=fopen("vr_drag.txt","w");
 	fp7=fopen("alpha.txt","w");
 	fp8=fopen("vr_gas.txt","w");
 	fp9=fopen("dpdr.txt","w");
@@ -38,9 +39,11 @@ vr_gas(r),vr_gas(r)*2*M_PI*r*LUNIT*Sigma(r)*TUNIT/MUNIT);
 	for(j=0;j<peb_size_num;j++){
 	fprintf(fp5,"%e\t",peb_map[i].hei[j]);
 	fprintf(fp6,"%e\t",peb_map[i].vr[j]);
+	fprintf(fp6b,"%e\t",peb_map[i].vr_drag[j]);
 	}
 	fprintf(fp5,"\n");
 	fprintf(fp6,"\n");
+  fprintf(fp6b,"\n");
 	}
 	fclose(fp1);
 	fclose(fp2);
@@ -48,6 +51,7 @@ vr_gas(r),vr_gas(r)*2*M_PI*r*LUNIT*Sigma(r)*TUNIT/MUNIT);
 	fclose(fp4);
 	fclose(fp5);
 	fclose(fp6);
+	fclose(fp6b);
 	fclose(fp7);
 	fclose(fp8);
 	fclose(fp9);

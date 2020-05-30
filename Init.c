@@ -174,6 +174,15 @@ void Init2(){// disk with variable resolution
 	fprintf(fp,"\n");
 	}
 	fclose(fp);
+	if(PEB_IMPOSE==1){
+		double dens;
+		fp=fopen("pebble_inject.txt","r");
+		for(j=0;j<peb_size_num;j++){
+			fscanf(fp,"%lf",&dens);
+			peb_map[0].surf_dens_impose[j]=dens;
+		}
+    fclose(fp);
+	}
 }
 
 void disk_evolve(){// evolving disk, update mdot, alpha, drift_velocity

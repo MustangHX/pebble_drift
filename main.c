@@ -186,9 +186,12 @@ int main(int argc, char *argv[])
 		return 0;
 		}
 	}
-	dust_evolve(dt);
+	//dust_evolve(dt);
 	//disk_evolve();
-	if(COAG_SW>0) {coagulation(dt,time_sum);}
+	if(COAG_SW>0) {
+    //coagulation(dt,time_sum);
+  fragmentation(dt,time_sum);}
+
 	mass_flow_inner=0.0;
 	for(i=ring_num-1;i>-1;i--){
         for(j=0;j<peb_size_num;j++){
@@ -202,8 +205,11 @@ int main(int argc, char *argv[])
 		if(i==ring_num-1 && 1 && 1) {
 			//peb_map[i].mass_out[j]=0.2*AREA*dust_budget[i].surf_dens*exp(-1.0*peb_map[i].size[j]/0.1)*exp(0.0*num_step/100);
 		if(peb_map[i].size_med[j]>size_min_inj && peb_map[i].size_med[j]<peb_size_lim){
-			peb_map[i].mass_out[j]+=1.0*dust_gas*peb_dust_inj*AREA*MUNIT*mdot*dt*p_size_func(peb_map[i].size_med[j])/out_source;
+			double factor=10.0;
+			peb_map[i].mass_out[j]+=1.0*dust_gas*peb_dust_inj*AREA*MUNIT*factor*mdot*dt*p_size_func(peb_map[i].size_med[j])/out_source;
 			}
+		  if(PEB_IMPOSE==1) peb_map[i].mass_out[j]=AREA*peb_map[0].surf_dens_impose[j];
+
 		}
 		else if(i<ring_num-1 && j<10 && 0){
                         peb_map[i].mass_out[j]=0.1*AREA*dust_budget[i].surf_dens*p_size_func(peb_map[i].size_med[j])*exp(0.0*num_step/100);

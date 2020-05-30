@@ -32,6 +32,7 @@ double vr_gas(double argc);
 double height(double argc);
 double coag_kernel(double a_pb1,double a_pb2,double delta_v,double rho1, double rho2, double dt0, double rad, int i, int j, int jj);
 void coagulation(double argc1, double argc2);
+void fragmentation(double argc1, double argc2);
 double p_size_func(double argc);
 double Sigma(double argc);
 double pressure(double argc);
